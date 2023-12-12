@@ -125,6 +125,8 @@ app.get("/item/info", (req, res) => {
   return res.send(`<p>item App have ${itemCount} item</p>`);
 });
 
+app.put("/item/:id", (req, res) => {});
+
 app.use(unknownEndpoint);
 
 app.listen(PORT, () => {

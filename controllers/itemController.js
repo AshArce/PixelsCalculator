@@ -1,4 +1,5 @@
-import generateId from "../utility/generateId";
+let items = [];
+
 function getItemInfo(_req, res) {
   const itemCount = items.length;
 

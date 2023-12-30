@@ -1,7 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import app from "../app.js";
+import app from "./app.js";
 
 const PORT = process.env.PORT || 3001;
 

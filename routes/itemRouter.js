@@ -8,6 +8,6 @@ itemRouter.get("/", itemController.getItems);
 itemRouter.get("/:id", itemController.getItems);
 itemRouter.delete("/:id", itemController.deleteItem);
 itemRouter.post("/", itemController.createItem);
-itemRouter.patch("/:id", itemController.updateFavorite);
+itemRouter.put("/:id", itemController.updateFavorite);
 
 export default itemRouter;

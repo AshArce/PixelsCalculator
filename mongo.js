@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 
 mongoose.set("strictQuery", false);
-mongoose.connect(MONGODB_URL);
+mongoose.connect(MONGODB_URI);
 
 const Item = mongoose.model("Item", itemSchema);
 

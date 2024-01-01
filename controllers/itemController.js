@@ -1,26 +1,28 @@
-let items = [];
+import Item from "../models/Item.js";
 
-function getItemInfo(_req, res) {
-  const itemCount = items.length;
+let Items = [];
+
+async function getItemInfo(_req, res) {
+  const itemCount = Items.length;
 
   return res.send(`<p>item App have ${itemCount} item</p>`);
 }
-function getItems(_req, res) {
+async function getItems(_req, res) {
   return res.json(items);
 }
-function getItem(req, res) {
+async function getItem(req, res) {
   const id = Number(req.params.id);
-  const item = items.find((item) => item.id === id);
+  const item = await Item.findById(id).then((item) => item);
 
   return res.json(item);
 }
-function deleteItem(_req, res) {
+async function deleteItem(_req, res) {
   const id = Number(req.params.id);
-  items = items.filter((item) => item.id !== id);
+  await Item.findByIdAndDelete(id);
 
   return res.status(204).end();
 }
-function createItem(_req, res) {
+async function createItem(req, res) {
   const body = req.body;
 
   if (!body.itemName) {
@@ -28,36 +30,36 @@ function createItem(_req, res) {
   }
 
   const newItem = {
-    id: generateId(items),
     itemName: body.itemName,
-    type: body.type,
+    itemType: body.itemType,
     seedCost: body.seedCost,
     energyCost: body.energyCost,
     sellValue: body.sellValue,
-    favorite: false,
   };
 
-  const addedItem = item.concat(newItem);
+  // Corrected the variable name from 'item' to 'items'
+  const addedItem = Items.concat(newItem);
 
   return res.status(201).json(addedItem);
 }
-function updateFavorite(_req, res) {
+
+async function updateItem(req, res) {
   const id = Number(req.params.id);
-  const index = items.findIndex((item) => item.id === id);
+  const { itemName, itemType, seedCost, energyCost, sellValue } = req.body;
 
-  if (index !== -1) {
-    const { favorite } = req.body;
-    const updatedItem = {
-      ...items[index],
-      favorite: favorite !== undefined ? favorite : items[index].favorite,
-    };
+  const item = {
+    itemName,
+    itemType,
+    seedCost,
+    energyCost,
+    sellValue,
+  };
 
-    item[index] = updatedItem;
+  const updatedItem = await Item.findByIdAndUpdate(id, item, {}).then(
+    (result) => result
+  );
 
-    return res.status(200).json(updatedItem);
-  } else {
-    return res.status(404).json({ error: "Item not found" });
-  }
+  return res.status(200).json(updatedItem);
 }
 
 export default {
@@ -66,5 +68,5 @@ export default {
   getItem,
   deleteItem,
   createItem,
-  updateFavorite,
+  updateItem,
 };

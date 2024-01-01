@@ -8,7 +8,7 @@ const Item = mongoose.model("Item", itemSchema);
 //saving to database
 const item1 = new Item({
   itemName: "Popberry seeds",
-  type: "seed",
+  itemType: "seed",
   seedCost: 1,
   energyCost: 3.5,
   sellValue: 3,

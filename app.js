@@ -8,8 +8,6 @@ import errorHandler from "./middlewares/errorHandler.js";
 import config from "./utility/config.js";
 import userRouter from "./routes/userRouter.js";
 
-dotenv.config();
-
 const MONGODB_URI = config.MONGODB_URI;
 const app = express();
 connectToDB(MONGODB_URI);

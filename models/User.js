@@ -1,4 +1,5 @@
 import mongoose from "mongoose";
+import mongooseUniqueValidator from "mongoose-unique-validator";
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -9,6 +10,8 @@ const userSchema = new mongoose.Schema({
   name: String,
   passwordHash: String,
 });
+
+userSchema.plugin(mongooseUniqueValidator);
 
 const User = mongoose.model("User", userSchema);
 

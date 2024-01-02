@@ -1,6 +1,10 @@
 import bcrypt from "bcrypt";
 import User from "../models/User.js";
 
+async function getUsers(req, res) {
+  const users = await User.find({});
+  return res.json(users);
+}
 async function createUser(req, res, next) {
   const { username, name, password } = req.body;
 
@@ -13,11 +17,16 @@ async function createUser(req, res, next) {
     passwordHash,
   });
 
-  const savedUser = await user.save();
+  try {
+    const savedUser = await user.save();
 
-  return res.status(201).json(savedUser);
+    return res.status(201).json(savedUser);
+  } catch (error) {
+    next(error);
+  }
 }
 
 export default {
   createUser,
+  getUsers,
 };

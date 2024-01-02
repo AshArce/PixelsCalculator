@@ -5,7 +5,7 @@ const itemRouter = express.Router();
 
 itemRouter.get("/info", itemController.getItemInfo);
 itemRouter.get("/", itemController.getItems);
-itemRouter.get("/:id", itemController.getItems);
+itemRouter.get("/:id", itemController.getItem);
 itemRouter.delete("/:id", itemController.deleteItem);
 itemRouter.post("/", itemController.createItem);
 itemRouter.put("/:id", itemController.updateItem);

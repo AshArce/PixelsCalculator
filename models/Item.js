@@ -1,11 +1,26 @@
 import mongoose from "mongoose";
 
 const itemSchema = new mongoose.Schema({
-  itemName: String,
-  itemType: String,
-  energyCost: Number,
-  seedCost: Number,
-  sellValue: Number,
+  itemName: {
+    type: String,
+    required: true,
+  },
+  itemType: {
+    type: String,
+    required: true,
+  },
+  energyCost: {
+    type: Number,
+    required: true,
+  },
+  seedCost: {
+    type: Number,
+    required: true,
+  },
+  sellValue: {
+    type: Number,
+    required: true,
+  },
   favorite: Boolean,
 });
 

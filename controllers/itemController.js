@@ -14,17 +14,18 @@ async function getItemInfo(_req, res) {
   }
 }
 
-async function getItems(_req, res) {
+async function getItems(_req, res, next) {
   try {
     const items = await Item.find({});
+
     return res.json(items);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    next(error);
   }
 }
 
-async function getItem(req, res) {
+async function getItem(req, res, next) {
   const id = req.params.id;
 
   try {
@@ -36,12 +37,11 @@ async function getItem(req, res) {
 
     return res.json(item);
   } catch (error) {
-    console.log(error);
-    return res.status(500).json({ message: "Malformatted ID" });
+    next(error);
   }
 }
 
-async function deleteItem(req, res) {
+async function deleteItem(req, res, next) {
   const id = req.params.id;
 
   try {
@@ -49,38 +49,36 @@ async function deleteItem(req, res) {
     return res.status(204).end();
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    next(error);
   }
 }
 
-async function createItem(req, res) {
+async function createItem(req, res, next) {
   const body = req.body;
 
   if (!body.itemName) {
     return res.status(400).json({ error: "Content missing" });
   }
-
-  const item = new Item({
-    itemName: body.itemName,
-    itemType: body.itemType,
-    seedCost: body.seedCost,
-    energyCost: body.energyCost,
-    sellValue: body.sellValue,
-  });
-
   try {
-    const savedItem = await item.save();
+    const item = new Item({
+      itemName: body.itemName,
+      itemType: body.itemType,
+      seedCost: body.seedCost,
+      energyCost: body.energyCost,
+      sellValue: body.sellValue,
+    });
+
+    const savedItem = await item.save().then((result) => result);
     return res.status(201).json(savedItem);
   } catch (error) {
     console.error(error);
-    return res.status(500).json({ message: "Error saving the item" });
+    next(error);
   }
 }
 
-async function updateItem(req, res) {
+async function updateItem(req, res, next) {
   const id = req.params.id;
   const { itemName, itemType, seedCost, energyCost, sellValue } = req.body;
-
   const item = {
     itemName,
     itemType,
@@ -88,13 +86,20 @@ async function updateItem(req, res) {
     energyCost,
     sellValue,
   };
-
   try {
-    const updatedItem = await Item.findByIdAndUpdate(id, item, { new: true });
-    return res.status(200).json(updatedItem);
+    const updatedItem = await Item.findByIdAndUpdate(id, item, {
+      new: true,
+      runValidatiors: true,
+      context: "query",
+    });
+
+    if (!updatedItem) {
+      return res.status(404).send({ error: "Item not found" });
+    }
+
+    return res.statust(404).json(updatedItem);
   } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal Server Error" });
+    next(error);
   }
 }
 

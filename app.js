@@ -1,7 +1,7 @@
 import express from "express";
 import morgan from "morgan";
 import cors from "cors";
-import itemRouter from "../Backend/routes/itemRouter.js";
+import itemRouter from "./routes/itemRouter.js";
 import unknownEndpoint from "./middlewares/unknownEndpoint.js";
 import connectToDB from "./utility/connectToDB.js";
 import errorHandler from "./middlewares/errorHandler.js";
@@ -12,7 +12,7 @@ const MONGODB_URI = config.MONGODB_URI;
 const app = express();
 connectToDB(MONGODB_URI);
 
-morgan.token("body", function (req, res) {
+morgan.token("body", function (req, _res) {
   return JSON.stringify(req.body);
 });
 

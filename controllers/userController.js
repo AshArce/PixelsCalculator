@@ -7,6 +7,7 @@ async function getUsers(req, res) {
   const users = await User.find({});
   return res.json(users);
 }
+
 async function createUser(req, res, next) {
   const { username, name, password } = req.body;
 
@@ -54,8 +55,36 @@ async function loginUser(req, res, next) {
     next(error);
   }
 }
+
+// Update favoriteItems for a user
+async function updateUserFavorites(req, res, next) {
+  const userId = req.params.userId;
+  const { itemName } = req.body;
+
+  try {
+    // Find the user by ID
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Update the user's favoriteItems array
+    user.favoriteItems = itemName;
+
+    // Save the updated user
+    const updatedUser = await user.save();
+
+    res.json(updatedUser);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: "Internal server error" });
+  }
+}
+
 export default {
   createUser,
   getUsers,
   loginUser,
+  updateUserFavorites, // Add this line for the new route
 };

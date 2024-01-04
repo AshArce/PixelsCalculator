@@ -16,9 +16,9 @@ async function getItemInfo(_req, res) {
 
 async function getItems(_req, res, next) {
   try {
-    const items = await Item.find({});
+    const items = await Item.find();
 
-    return res.json(items);
+    return res.status(200).json(items);
   } catch (error) {
     console.error(error);
     next(error);

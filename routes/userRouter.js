@@ -7,5 +7,9 @@ const userRouter = express.Router();
 userRouter.post("/", userController.createUser);
 userRouter.get("/", userController.getUsers);
 userRouter.post("/login", userController.loginUser);
+userRouter.put(
+  "/users/:userId/favoriteItems",
+  userController.updateUserFavorites
+);
 
 export default userRouter;

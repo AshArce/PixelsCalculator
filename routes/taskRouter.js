@@ -6,7 +6,7 @@ import authMiddleware from "../middlewares/authMiddleware";
 const taskRouter = express.Router();
 
 // Define routes for task operations
-taskRouter.post("/tasks", authMiddleware, taskController.createTask);
-taskRouter.put("/tasks/:taskId", authMiddleware, taskController.updateTask);
+taskRouter.post("/", authMiddleware, taskController.createTask);
+taskRouter.put("/:taskId", authMiddleware, taskController.updateTask);
 
 export default taskRouter;

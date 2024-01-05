@@ -8,9 +8,6 @@ userRouter.post("/", userController.createUser);
 userRouter.get("/", userController.getUsers);
 userRouter.get("/:id", userController.getUser);
 userRouter.post("/login", userController.loginUser);
-userRouter.patch(
-  "/users/:id/favoriteItems",
-  userController.updateUserFavorites
-);
+userRouter.patch("/:id/favoriteItems", userController.updateUserFavorites);
 
 export default userRouter;

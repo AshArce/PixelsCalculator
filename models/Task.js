@@ -1,15 +1,20 @@
 import mongoose from "mongoose";
-import mongooseUniqueValidator from "mongoose-unique-validator";
 
 //Define Task Schema
 
-const TaskSchema = new mongoose.Schema({
-  Value: Number,
+const taskSchema = new mongoose.Schema({
+  itemId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Item",
+  },
+  quantity: Number,
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+  },
 });
 
-userSchema.plugin(mongooseUniqueValidator);
-
-Schema.set("toJSON", {
+taskSchema.set("toJSON", {
   transform: (_document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
     delete returnedObject._id;
@@ -17,6 +22,6 @@ Schema.set("toJSON", {
   },
 });
 
-const Task = mongoose.model("Task", TaskSchema);
+const Task = mongoose.model("Task", taskSchema);
 
 export default Task;

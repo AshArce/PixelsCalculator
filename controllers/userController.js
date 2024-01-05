@@ -92,7 +92,7 @@ async function updateUserFavorites(req, res, next) {
     // Save the updated user
     const updatedUser = await user.save();
 
-    res.json(updatedUser);
+    return res.status(200).json(updatedUser);
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Internal server error" });

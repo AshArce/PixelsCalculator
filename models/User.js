@@ -23,6 +23,12 @@ const userSchema = new mongoose.Schema({
       ref: "Item",
     },
   ],
+  tasks: [
+    {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Task",
+    },
+  ],
 });
 
 userSchema.plugin(mongooseUniqueValidator);

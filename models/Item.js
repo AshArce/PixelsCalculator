@@ -21,7 +21,6 @@ const itemSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  favorite: Boolean,
 });
 
 itemSchema.set("toJSON", {

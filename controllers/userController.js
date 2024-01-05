@@ -3,9 +3,25 @@ import User from "../models/User.js";
 import jwt from "jsonwebtoken";
 import config from "../utility/config.js";
 
-async function getUsers(req, res) {
+async function getUsers(_req, res) {
   const users = await User.find({});
   return res.json(users);
+}
+
+async function getUser(req, res, next) {
+  const id = req.params.id;
+
+  try {
+    const user = await User.findById(id);
+
+    if (!User) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    return res.json(user);
+  } catch (error) {
+    next(error);
+  }
 }
 
 async function createUser(req, res, next) {
@@ -58,7 +74,8 @@ async function loginUser(req, res, next) {
 
 // Update favoriteItems for a user
 async function updateUserFavorites(req, res, next) {
-  const userId = req.params.userId;
+  const userId = req.params.id;
+  console.log(userId);
   const { itemName } = req.body;
 
   try {
@@ -85,6 +102,7 @@ async function updateUserFavorites(req, res, next) {
 export default {
   createUser,
   getUsers,
+  getUser,
   loginUser,
-  updateUserFavorites, // Add this line for the new route
+  updateUserFavorites,
 };

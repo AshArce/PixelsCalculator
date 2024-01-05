@@ -20,7 +20,7 @@ const userSchema = new mongoose.Schema({
   favoriteItems: [
     {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "ItemName",
+      ref: "Item",
     },
   ],
 });

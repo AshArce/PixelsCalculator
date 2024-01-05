@@ -27,7 +27,7 @@ const itemSchema = new mongoose.Schema({
 itemSchema.set("toJSON", {
   transform: (_document, returnedObject) => {
     returnedObject.id = returnedObject._id.toString();
-    delete returnedObject.id;
+    delete returnedObject._id;
     delete returnedObject.__v;
   },
 });

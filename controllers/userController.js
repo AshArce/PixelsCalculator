@@ -125,6 +125,42 @@ async function removeFavoriteItem(req, res, next) {
   }
 }
 
+async function createTask(req, res, next) {
+  const userId = req.params.userId;
+  const { itemId } = req.body;
+
+  try {
+    // Check if the user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Fetch item details from the database
+    const item = await Item.findById(itemId);
+    if (!item) {
+      return res.status(404).json({ message: "Item not found" });
+    }
+
+    // Create a task object with item properties
+    const task = {
+      itemId: item._id,
+      itemName: item.itemName,
+      energyCost: item.energyCost,
+      sellValue: item.sellValue,
+      // ... other task properties ...
+    };
+
+    // Add the task to the user's tasks
+    user.tasks.push(task);
+    await user.save();
+
+    return res.status(201).json(task);
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
   createUser,
   getUsers,
@@ -132,4 +168,5 @@ export default {
   loginUser,
   addFavoriteItem,
   removeFavoriteItem,
+  createTask,
 };

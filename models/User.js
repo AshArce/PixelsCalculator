@@ -23,8 +23,14 @@ const userSchema = new mongoose.Schema({
   ],
   tasks: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Task",
+      itemId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Item",
+      },
+      itemName: String,
+      energyCost: Number,
+      sellValue: Number,
+      time: Number,
     },
   ],
 });

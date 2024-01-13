@@ -49,7 +49,7 @@ async function createUser(req, res, next) {
 async function loginUser(req, res, next) {
   const { username, password } = req.body;
   try {
-    const user = await User.findOne({ username });
+    const user = await User.findOne({ username }).populate("favoriteItems");
     const passwordCorrect =
       user === null ? false : await bcrypt.compare(password, user.passwordHash);
 
@@ -125,6 +125,34 @@ async function removeFavoriteItem(req, res, next) {
   }
 }
 
+async function updateUserFavorites(userId, itemId, isFavorite) {
+  try {
+    const user = await User.findById(userId);
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (isFavorite) {
+      // Remove the item ID from favorites
+      user.favoriteItems = user.favoriteItems.filter(
+        (favoriteItem) => favoriteItem.id !== itemId
+      );
+    } else {
+      // Add the item ID to favorites
+      user.favoriteItems.push(itemId);
+    }
+
+    // Save the updated user data
+    const updatedUser = await user.save();
+    return updatedUser;
+  } catch (error) {
+    // Handle the error here, e.g., log the error or perform additional actions
+    console.error("Error in updateUserFavorites:", error.message);
+    throw error; // Rethrow the error to propagate it to the caller
+  }
+}
+
 async function createTask(req, res, next) {
   const userId = req.params.userId;
   const { itemId } = req.body;
@@ -168,5 +196,6 @@ export default {
   loginUser,
   addFavoriteItem,
   removeFavoriteItem,
+  updateUserFavorites,
   createTask,
 };

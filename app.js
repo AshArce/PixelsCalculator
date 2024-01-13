@@ -2,7 +2,6 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import itemRouter from "./routes/itemRouter.js";
-// import taskRouter from "./routes/taskRouter.js";
 import userRouter from "./routes/userRouter.js";
 import unknownEndpoint from "./middlewares/unknownEndpoint.js";
 import connectToDB from "./utility/connectToDB.js";
@@ -24,7 +23,6 @@ app.use(morgan(":method :url :status :body"));
 
 app.use("/users", userRouter);
 app.use("/item", itemRouter);
-// app.use("/tasks", taskRouter);
 
 app.use(unknownEndpoint);
 app.use(errorHandler);

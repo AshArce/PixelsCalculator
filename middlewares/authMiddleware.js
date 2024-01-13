@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import JWT_SECRET from "../utility/config";
+import { JWT_SECRET } from "../utility/config"; // Assuming config exports JWT_SECRET
 
 const secretKey = JWT_SECRET;
 

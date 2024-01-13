@@ -2,11 +2,12 @@ import express from "express";
 import morgan from "morgan";
 import cors from "cors";
 import itemRouter from "./routes/itemRouter.js";
+// import taskRouter from "./routes/taskRouter.js";
+import userRouter from "./routes/userRouter.js";
 import unknownEndpoint from "./middlewares/unknownEndpoint.js";
 import connectToDB from "./utility/connectToDB.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import config from "./utility/config.js";
-import userRouter from "./routes/userRouter.js";
 
 const MONGODB_URI = config.MONGODB_URI;
 const app = express();
@@ -19,11 +20,11 @@ morgan.token("body", function (req, _res) {
 app.use(cors());
 app.use(express.json());
 app.use(express.static("dist"));
-app.use(express.static("dist"));
 app.use(morgan(":method :url :status :body"));
 
 app.use("/users", userRouter);
 app.use("/item", itemRouter);
+// app.use("/tasks", taskRouter);
 
 app.use(unknownEndpoint);
 app.use(errorHandler);

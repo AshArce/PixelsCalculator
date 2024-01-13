@@ -1,7 +1,5 @@
+// user.js
 import mongoose from "mongoose";
-import mongooseUniqueValidator from "mongoose-unique-validator";
-
-//Define User Schema
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -38,8 +36,6 @@ userSchema.set("toJSON", {
     delete returnedObject.__v;
   },
 });
-
-userSchema.plugin(mongooseUniqueValidator);
 
 const User = mongoose.model("User", userSchema);
 

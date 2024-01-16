@@ -97,7 +97,7 @@ async function updateItem(req, res, next) {
       return res.status(404).send({ error: "Item not found" });
     }
 
-    return res.statust(404).json(updatedItem);
+    return res.status(200).json(updatedItem);
   } catch (error) {
     next(error);
   }

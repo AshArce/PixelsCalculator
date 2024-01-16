@@ -1,7 +1,5 @@
+// user.js
 import mongoose from "mongoose";
-import mongooseUniqueValidator from "mongoose-unique-validator";
-
-//Define User Schema
 
 const userSchema = new mongoose.Schema({
   username: {
@@ -25,13 +23,25 @@ const userSchema = new mongoose.Schema({
   ],
   tasks: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "Task",
+      itemId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Item",
+      },
+      itemName: String,
+      energyCost: Number,
+      sellValue: Number,
+      time: Number,
     },
   ],
 });
 
-userSchema.plugin(mongooseUniqueValidator);
+userSchema.set("toJSON", {
+  transform: (_document, returnedObject) => {
+    returnedObject.id = returnedObject._id.toString();
+    delete returnedObject._id;
+    delete returnedObject.__v;
+  },
+});
 
 const User = mongoose.model("User", userSchema);
 

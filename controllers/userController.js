@@ -155,7 +155,7 @@ async function updateUserFavorites(userId, itemId, isFavorite) {
 
 async function createTask(req, res, next) {
   const userId = req.params.userId;
-  const { itemId } = req.body;
+  const { itemId, quantity } = req.body;
 
   try {
     // Check if the user exists
@@ -164,7 +164,7 @@ async function createTask(req, res, next) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Fetch item details from the database
+    // Find the item in the database
     const item = await Item.findById(itemId);
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
@@ -172,10 +172,11 @@ async function createTask(req, res, next) {
 
     // Create a task object with item properties
     const task = {
-      itemId: item._id,
+      itemId: item.id,
       itemName: item.itemName,
       energyCost: item.energyCost,
       sellValue: item.sellValue,
+      quantity: quantity || 1, // Use the provided quantity or default to 1
       // ... other task properties ...
     };
 

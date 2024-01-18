@@ -10,6 +10,7 @@ userRouter.get("/:id", userController.getUser);
 userRouter.post("/login", userController.loginUser);
 
 //Favorites Controller
+userRouter.get("/:userId/favorite-items", userController.getFavoriteItems);
 userRouter.post("/:userId/add-favorite-item", userController.addFavoriteItem);
 userRouter.put(
   "/:userId/remove-favorite-item",

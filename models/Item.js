@@ -21,6 +21,10 @@ const itemSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
+  imgUrl: {
+    type: String,
+    required: true,
+  },
 });
 
 itemSchema.set("toJSON", {

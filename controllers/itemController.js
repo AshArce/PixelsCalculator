@@ -61,13 +61,15 @@ async function createItem(req, res, next) {
 
 async function updateItem(req, res, next) {
   const id = req.params.id;
-  const { itemName, itemType, seedCost, energyCost, sellValue } = req.body;
+  const { itemName, itemType, seedCost, energyCost, sellValue, imgUrl } =
+    req.body;
   const item = {
     itemName,
     itemType,
     seedCost,
     energyCost,
     sellValue,
+    imgUrl,
   };
 
   try {

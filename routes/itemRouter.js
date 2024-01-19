@@ -3,7 +3,6 @@ import itemController from "../controllers/itemController.js";
 
 const itemRouter = express.Router();
 
-itemRouter.get("/info", itemController.getItemInfo);
 itemRouter.get("/", itemController.getItems);
 itemRouter.get("/:id", itemController.getItem);
 itemRouter.delete("/:id", itemController.deleteItem);

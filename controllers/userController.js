@@ -168,6 +168,7 @@ async function createTask(req, res, next) {
     const task = {
       itemId: item.id,
       itemName: item.itemName,
+      itemType: item.itemType,
       energyCost: item.energyCost,
       sellValue: item.sellValue,
       quantity: quantity || 1, // Use the provided quantity or default to 1
@@ -184,6 +185,62 @@ async function createTask(req, res, next) {
   }
 }
 
+async function deleteTask(req, res, next) {
+  const userId = req.params.userId;
+  const taskIdToRemove = req.body.taskId;
+  try {
+    // Check if the user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Remove the task from the user's tasks
+    user.tasks = user.tasks.filter(
+      (task) => task._id.toString() !== taskIdToRemove
+    );
+    await user.save();
+
+    return res.status(200).json(user.tasks);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function updateTask(req, res, next) {
+  const userId = req.params.userId;
+  const taskIdToUpdate = req.params.taskId;
+  const { quantity } = req.body;
+
+  try {
+    // Check if the user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Find the task in the user's tasks
+    const taskToUpdate = user.tasks.find(
+      (task) => task._id.toString() === taskIdToUpdate
+    );
+
+    if (!taskToUpdate) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    // Update task properties
+    taskToUpdate.quantity = quantity || taskToUpdate.quantity;
+    // Update other task properties if needed
+    // taskToUpdate.otherProperty = otherPropertiesToUpdate;
+
+    await user.save();
+
+    return res.status(200).json(taskToUpdate);
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
   createUser,
   getUsers,
@@ -193,4 +250,6 @@ export default {
   addFavoriteItem,
   removeFavoriteItem,
   createTask,
+  deleteTask,
+  updateTask,
 };

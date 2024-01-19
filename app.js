@@ -7,6 +7,7 @@ import unknownEndpoint from "./middlewares/unknownEndpoint.js";
 import connectToDB from "./utility/connectToDB.js";
 import errorHandler from "./middlewares/errorHandler.js";
 import config from "./utility/config.js";
+import landRouter from "./routes/landRouter.js";
 
 const MONGODB_URI = config.MONGODB_URI;
 const app = express();
@@ -23,6 +24,7 @@ app.use(morgan(":method :url :status :body"));
 
 app.use("/users", userRouter);
 app.use("/item", itemRouter);
+app.use("/lands", landRouter);
 
 app.use(unknownEndpoint);
 app.use(errorHandler);

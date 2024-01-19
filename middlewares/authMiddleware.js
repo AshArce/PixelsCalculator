@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
-import { JWT_SECRET } from "../utility/config"; // Assuming config exports JWT_SECRET
+import config from "../utility/config";
 
-const secretKey = JWT_SECRET;
+const secretKey = config.JWT_SECRET;
 
 const authMiddleware = (req, res, next) => {
   // Get the token from the request header

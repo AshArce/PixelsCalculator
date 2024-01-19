@@ -150,6 +150,7 @@ async function removeFavoriteItem(req, res, next) {
 async function createTask(req, res, next) {
   const userId = req.params.userId;
   const { itemId, quantity } = req.body;
+  console.log("Received Quantity:", quantity);
 
   try {
     // Check if the user exists
@@ -170,6 +171,7 @@ async function createTask(req, res, next) {
       itemName: item.itemName,
       itemType: item.itemType,
       energyCost: item.energyCost,
+      seedCost: item.seedCost,
       sellValue: item.sellValue,
       quantity: quantity || 1, // Use the provided quantity or default to 1
       // ... other task properties ...
@@ -185,9 +187,29 @@ async function createTask(req, res, next) {
   }
 }
 
+async function getTasks(req, res, next) {
+  const userId = req.params.userId;
+
+  try {
+    // Check if the user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Retrieve tasks from the user's data
+    const tasks = user.tasks || [];
+
+    return res.status(200).json(tasks);
+  } catch (error) {
+    next(error);
+  }
+}
+
 async function deleteTask(req, res, next) {
   const userId = req.params.userId;
   const taskIdToRemove = req.body.taskId;
+
   try {
     // Check if the user exists
     const user = await User.findById(userId);
@@ -250,6 +272,7 @@ export default {
   addFavoriteItem,
   removeFavoriteItem,
   createTask,
+  getTasks,
   deleteTask,
   updateTask,
 };

@@ -53,8 +53,8 @@ async function createLand(req, res, next) {
       landIndustries: body.landIndustries,
     });
 
-    const savedItem = await land.save().then((result) => result);
-    return res.status(201).json(savedItem);
+    const savedLand = await land.save().then((result) => result);
+    return res.status(201).json(savedLand);
   } catch (error) {
     console.error(error);
     next(error);

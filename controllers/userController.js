@@ -15,8 +15,8 @@ async function getUser(req, res, next) {
   try {
     const user = await User.findById(id);
 
-    if (!User) {
-      return res.status(404).json({ message: "Item not found" });
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
     }
 
     return res.json(user);
@@ -67,22 +67,37 @@ async function loginUser(req, res, next) {
 
     return res
       .status(200)
-      .json({ token, username: user.username, name: user.name });
+      .json({ token, username: user.username, name: user.name, id: user._id });
   } catch (error) {
     next(error);
   }
 }
 
-async function addFavoriteItem(req, res, next) {
+async function getFavoriteItems(req, res, next) {
   const userId = req.params.userId;
-  const itemId = req.body.itemId; // Assuming you send the itemId in the request body
 
   try {
-    // Check if the user exists
+    const user = await User.findById(userId).populate("favoriteItems");
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    res.status(200).json(user.favoriteItems);
+  } catch (error) {}
+}
+
+async function addFavoriteItem(req, res, next) {
+  const userId = req.params.userId;
+  const itemId = req.body.itemId;
+
+  try {
     const user = await User.findById(userId);
     if (!user) {
       return res.status(404).json({ message: "User not found" });
     }
+
+    console.log("Received itemId:", itemId);
 
     // Check if the item exists
     const item = await Item.findById(itemId);
@@ -90,11 +105,18 @@ async function addFavoriteItem(req, res, next) {
       return res.status(404).json({ message: "Item not found" });
     }
 
-    // Add the item to the user's favoriteItems
-    if (!user.favoriteItems.includes(itemId)) {
-      user.favoriteItems.push(itemId);
-      await user.save();
+    // Check if the item is already in the user's favoriteItems
+    if (user.favoriteItems.includes(itemId)) {
+      return res.status(200).json(user); // Item is already in favorites, no need to add again
     }
+
+    // Add the item to the user's favoriteItems
+    user.favoriteItems.push(itemId);
+
+    // Use a Set to remove duplicate item IDs
+    user.favoriteItems = [...new Set(user.favoriteItems)];
+
+    await user.save();
 
     return res.status(200).json(user);
   } catch (error) {
@@ -125,37 +147,10 @@ async function removeFavoriteItem(req, res, next) {
   }
 }
 
-async function updateUserFavorites(userId, itemId, isFavorite) {
-  try {
-    const user = await User.findById(userId);
-
-    if (!user) {
-      throw new Error("User not found");
-    }
-
-    if (isFavorite) {
-      // Remove the item ID from favorites
-      user.favoriteItems = user.favoriteItems.filter(
-        (favoriteItem) => favoriteItem.id !== itemId
-      );
-    } else {
-      // Add the item ID to favorites
-      user.favoriteItems.push(itemId);
-    }
-
-    // Save the updated user data
-    const updatedUser = await user.save();
-    return updatedUser;
-  } catch (error) {
-    // Handle the error here, e.g., log the error or perform additional actions
-    console.error("Error in updateUserFavorites:", error.message);
-    throw error; // Rethrow the error to propagate it to the caller
-  }
-}
-
 async function createTask(req, res, next) {
   const userId = req.params.userId;
-  const { itemId } = req.body;
+  const { itemId, quantity } = req.body;
+  console.log("Received Quantity:", quantity);
 
   try {
     // Check if the user exists
@@ -164,7 +159,7 @@ async function createTask(req, res, next) {
       return res.status(404).json({ message: "User not found" });
     }
 
-    // Fetch item details from the database
+    // Find the item in the database
     const item = await Item.findById(itemId);
     if (!item) {
       return res.status(404).json({ message: "Item not found" });
@@ -172,10 +167,13 @@ async function createTask(req, res, next) {
 
     // Create a task object with item properties
     const task = {
-      itemId: item._id,
+      itemId: item.id,
       itemName: item.itemName,
+      itemType: item.itemType,
       energyCost: item.energyCost,
+      seedCost: item.seedCost,
       sellValue: item.sellValue,
+      quantity: quantity || 1, // Use the provided quantity or default to 1
       // ... other task properties ...
     };
 
@@ -189,13 +187,92 @@ async function createTask(req, res, next) {
   }
 }
 
+async function getTasks(req, res, next) {
+  const userId = req.params.userId;
+
+  try {
+    // Check if the user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Retrieve tasks from the user's data
+    const tasks = user.tasks || [];
+
+    return res.status(200).json(tasks);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function deleteTask(req, res, next) {
+  const userId = req.params.userId;
+  const taskIdToRemove = req.body.taskId;
+
+  try {
+    // Check if the user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Remove the task from the user's tasks
+    user.tasks = user.tasks.filter(
+      (task) => task._id.toString() !== taskIdToRemove
+    );
+    await user.save();
+
+    return res.status(200).json(user.tasks);
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function updateTask(req, res, next) {
+  const userId = req.params.userId;
+  const taskIdToUpdate = req.params.taskId;
+  const { quantity } = req.body;
+
+  try {
+    // Check if the user exists
+    const user = await User.findById(userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Find the task in the user's tasks
+    const taskToUpdate = user.tasks.find(
+      (task) => task._id.toString() === taskIdToUpdate
+    );
+
+    if (!taskToUpdate) {
+      return res.status(404).json({ message: "Task not found" });
+    }
+
+    // Update task properties
+    taskToUpdate.quantity = quantity || taskToUpdate.quantity;
+    // Update other task properties if needed
+    // taskToUpdate.otherProperty = otherPropertiesToUpdate;
+
+    await user.save();
+
+    return res.status(200).json(taskToUpdate);
+  } catch (error) {
+    next(error);
+  }
+}
+
 export default {
   createUser,
   getUsers,
   getUser,
   loginUser,
+  getFavoriteItems,
   addFavoriteItem,
   removeFavoriteItem,
-  updateUserFavorites,
   createTask,
+  getTasks,
+  deleteTask,
+  updateTask,
 };

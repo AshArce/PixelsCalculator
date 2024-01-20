@@ -1,19 +1,5 @@
 import Item from "../models/Item.js";
 
-async function getItemInfo(_req, res) {
-  try {
-    const items = await Item.find({});
-    const itemsCount = items.length;
-
-    return res.send(
-      `<p>Item App has ${itemsCount} item${itemsCount !== 1 ? "s" : ""}</p>`
-    );
-  } catch (error) {
-    console.error(error);
-    return res.status(500).json({ message: "Internal Server Error" });
-  }
-}
-
 async function getItems(_req, res, next) {
   try {
     const items = await Item.find();
@@ -25,30 +11,26 @@ async function getItems(_req, res, next) {
   }
 }
 
-async function getItem(req, res, next) {
-  const id = req.params.id;
-
+async function getItem(id) {
   try {
     const item = await Item.findById(id);
 
     if (!item) {
-      return res.status(404).json({ message: "Item not found" });
+      throw new Error("Item not found");
     }
 
-    return res.json(item);
+    return item;
   } catch (error) {
+    console.error(`Error getting item by ID (${id}):`, error);
     next(error);
   }
 }
 
-async function deleteItem(req, res, next) {
-  const id = req.params.id;
-
+async function deleteItem(id) {
   try {
     await Item.findByIdAndDelete(id);
-    return res.status(204).end();
   } catch (error) {
-    console.error(error);
+    console.error(`Error deleting item by ID (${id}):`, error);
     next(error);
   }
 }
@@ -59,6 +41,7 @@ async function createItem(req, res, next) {
   if (!body.itemName) {
     return res.status(400).json({ error: "Content missing" });
   }
+
   try {
     const item = new Item({
       itemName: body.itemName,
@@ -71,40 +54,42 @@ async function createItem(req, res, next) {
     const savedItem = await item.save().then((result) => result);
     return res.status(201).json(savedItem);
   } catch (error) {
-    console.error(error);
-    next(error);
+    console.error("Error creating item:", error);
+    next(error); // Rethrow the exception
   }
 }
 
 async function updateItem(req, res, next) {
   const id = req.params.id;
-  const { itemName, itemType, seedCost, energyCost, sellValue } = req.body;
+  const { itemName, itemType, seedCost, energyCost, sellValue, imgUrl } =
+    req.body;
   const item = {
     itemName,
     itemType,
     seedCost,
     energyCost,
     sellValue,
+    imgUrl,
   };
-  try {
-    const updatedItem = await Item.findByIdAndUpdate(id, item, {
-      new: true,
-      runValidatiors: true,
-      context: "query",
-    });
 
-    if (!updatedItem) {
+  try {
+    const existingItem = await Item.findById(id);
+
+    if (!existingItem) {
       return res.status(404).send({ error: "Item not found" });
     }
 
+    Object.assign(existingItem, item); // Update properties
+    const updatedItem = await existingItem.save();
+
     return res.status(200).json(updatedItem);
   } catch (error) {
-    next(error);
+    console.error(`Error updating item by ID (${id}):`, error);
+    next(error); // Rethrow the exception
   }
 }
 
 export default {
-  getItemInfo,
   getItems,
   getItem,
   deleteItem,
